@@ -1,0 +1,30 @@
+---
+
+- name: Disable swap for current session
+  ansible.builtin.command: swapoff -a
+  become: true
+
+- name: Disable swap in /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+
+- name: Enforce sysctl parameters
+  ansible.builtin.template:
+    src: "k8s-sysctl.conf.j2"
+    dest: "{{ k8s_sysctl_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Apply sysctl
+
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - curl
+      - gnupg2
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+    state: present

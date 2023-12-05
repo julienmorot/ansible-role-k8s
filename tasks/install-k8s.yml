@@ -1,0 +1,23 @@
+---
+
+- name: Add Kubernetes Package signing key
+  ansible.builtin.get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg 
+    dest: /etc/apt/trusted.gpg.d/docker.asc
+    mode: '0644'
+    force: true
+
+- name: Add Kubernetes APT repo
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main
+    state: present
+
+- name: Install Kubernetes packages 
+  ansible.builtin.apt:
+    name:
+      - kubelete
+      - kubeadm
+      - kubectl
+    state: latest
+    update_cache: yes
+

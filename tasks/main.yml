@@ -1,0 +1,6 @@
+---
+
+- import_tasks: "os-requirements.yml"
+- import_tasks: "container-runtime.yml"
+  #- import_tasks: "install-k8s.yml"
+
