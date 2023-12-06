@@ -1,45 +1,13 @@
 ---
 
-- name: Create a symbolic link
-  ansible.builtin.file:
-    path: /etc/apt/trusted.gpg.d/docker.asc 
-    state: absent 
-
-- name: Create a symbolic link
-  ansible.builtin.file:
-    path: /etc/apt/keyrings/docker.asc 
-    state: absent 
-
-- name: Create a symbolic link
-  ansible.builtin.file:
-    path: /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list 
-    state: absent 
-
 - name: Add Docker CE Package signing key
-  ansible.builtin.get_url:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    dest: /etc/apt/trusted.gpg.d/docker.asc
-    mode: '0644'
-    force: true
-
-- name: Switch package signing key to new format
   ansible.builtin.shell:
-    cmd: cat /etc/apt/trusted.gpg.d/docker.asc | gpg --dearmor --batch --yes -o /etc/apt/trusted.gpg.d/docker.gpg
+    cmd:  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor --batch --yes -o /etc/apt/keyrings/docker.gpg
 
 - name: Add Docker CE APT repo
   ansible.builtin.apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
     state: present
-
-#- name: Add Docker CE APT repo
-#  deb822_repository:
-#    name: docker-ce
-#    types: deb
-#    uris: https://download.docker.com/linux/ubuntu
-#    suites: '{{ ansible_distribution_release }}'
-#    components: stable
-#    architectures: amd64
-#    signed_by:  https://download.docker.com/linux/ubuntu/gpg 
 
 - name: Remove Distribution's docker package
   ansible.builtin.apt:
