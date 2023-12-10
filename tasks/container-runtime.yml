@@ -31,15 +31,24 @@
     state: started
 
 - name: Add users to docker group
-  user:
+  ansible.builtin.user:
     name: "{{ item }}"
     groups: docker
     append: yes
   with_items:  "{{ add_docker_users }} "
 
 - name: Remove users from docker group
-  user:
+  ansible.builtin.user:
     name: "{{ item }}"
     groups: docker
     append: yes
   with_items:  "{{ remove_docker_users }} "
+
+- name: Deploy config.toml
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart containerd

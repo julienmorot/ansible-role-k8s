@@ -3,3 +3,8 @@
 - name: Apply sysctl
   ansible.builtin.command:
     cmd: sysctl -p
+
+- name: Restart containerd
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
