@@ -8,3 +8,8 @@
   ansible.builtin.service:
     name: containerd
     state: restarted
+
+- name: Restart docker
+  ansible.builtin.service:
+    name: docker
+    state: restarted
